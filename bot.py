@@ -387,26 +387,42 @@ def _format_result(symbol: str, r: dict) -> str:
     )]
     ai_short = "\n".join(ai_lines[:8])
 
+    sep = "─" * 30
+    dir_label = dir_map.get(d, "⚪ HOLD")
+    mtf_str = "\n".join(mtf_lines) or "  нет"
+    macd_arrow = "▲" if ind.get("macd_hist", 0) > 0 else "▼"
+    ema_trend = ind.get("ema_trend", "?")
+    liq_desc = liq.get("description", "")[:80]
+    of_summary = of.get("summary", "")[:80]
+    avwap_above = avwap.get("above_count", 0)
+    avwap_total = len(avwap.get("levels", {}))
+    poc = vp.get("poc", 0)
+    vp_zone = "В VA" if vp.get("in_value_area") else ("▲ VAH" if vp.get("above_vah") else "▼ VAL")
+    fg_val = fg.get("value", "?")
+    fg_label = fg.get("label", "?")
+    btc_dom = ext.get("btc_dominance", "?")
+    news_sent = ext.get("news_sentiment", "?")
+    funding_str = f" | Funding:{funding}" if funding else ""
+
     return (
-        f"🧠 <b>{symbol}</b>\n{'─'*30}\n"
-        f"🎯 <b>{dir_map.get(d,'⚪ HOLD')}</b>  Уверенность: <b>{c}%</b>\n"
+        f"🧠 <b>{symbol}</b>\n{sep}\n"
+        f"🎯 <b>{dir_label}</b>  Уверенность: <b>{c}%</b>\n"
         f"[{bar}]  Скор: <b>{comp:+d}/100</b>\n"
         f"💲 <b>${price:,.4f}</b>\n\n"
 
-        f"📐 <b>MTF:</b>\n" + ("\n".join(mtf_lines) or "  нет") + "\n\n"
+        f"📐 <b>MTF:</b>\n{mtf_str}\n\n"
 
-        f"📊 <b>Индикаторы:</b> RSI:{ind.get('rsi',0):.1f} | MACD:{'▲' if ind.get('macd_hist',0)>0 else '▼'} | EMA:{ind.get('ema_trend','?')} | ADX:{ind.get('adx',0):.1f}\n\n"
+        f"📊 <b>Индикаторы:</b> RSI:{ind.get('rsi', 0):.1f} | MACD:{macd_arrow} | EMA:{ema_trend} | ADX:{ind.get('adx', 0):.1f}\n\n"
 
-        f"💧 {liq_e} <b>Liquidity</b> ({liq.get('score',0):+d}): {liq.get('description','')[:80]}"
-        + (sweep_str + "\n\n" if sweeps else "\n\n")
+        f"💧 {liq_e} <b>Liquidity</b> ({liq.get('score', 0):+d}): {liq_desc}"
+        + (sweep_str + "\n\n" if sweeps else "\n\n") +
 
-        f"📈 {of_e} <b>Order Flow</b> ({of.get('score',0):+d}): {of.get('summary','')[:80]}\n\n"
+        f"📈 {of_e} <b>Order Flow</b> ({of.get('score', 0):+d}): {of_summary}\n\n"
 
-        f"⚓ {avwap_e} <b>AVWAP</b>: цена выше {avwap.get('above_count',0)}/{len(avwap.get('levels',{}))} уровней\n"
-        f"📦 {vp_e} <b>Vol Profile</b>: POC ${vp.get('poc',0):.4f} | {'В VA' if vp.get('in_value_area') else ('▲ VAH' if vp.get('above_vah') else '▼ VAL')}\n\n"
+        f"⚓ {avwap_e} <b>AVWAP</b>: цена выше {avwap_above}/{avwap_total} уровней\n"
+        f"📦 {vp_e} <b>Vol Profile</b>: POC ${poc:.4f} | {vp_zone}\n\n"
 
-        f"🌍 F&G:{fg.get('value','?')}/100 | Dom:{ext.get('btc_dominance','?')}% | {ext.get('news_sentiment','?')}"
-        + (f" | Funding:{funding}" if funding else "") + "\n\n"
+        f"🌍 F&G:{fg_val}/100 ({fg_label}) | Dom:{btc_dom}% | {news_sent}{funding_str}\n\n"
 
         f"🤖 <b>AI Вердикт:</b>\n<code>{ai_short}</code>\n\n"
         f"⚠️ <i>Не финансовый совет</i>"
