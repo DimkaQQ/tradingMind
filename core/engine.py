@@ -11,7 +11,7 @@ import anthropic
 from analysis.technical import TechnicalAnalyzer
 from analysis.patterns import CandlePatterns
 from analysis.multi_timeframe import MultiTimeframeAnalyzer
-from analysis.correlation import CorrelationAnalyzer
+from analysis.multi_timeframe import CorrelationAnalyzer
 from analysis.liquidity import LiquidityAnalyzer
 from analysis.order_flow import OrderFlowAnalyzer
 from analysis.anchored_vwap import AnchoredVWAPAnalyzer
